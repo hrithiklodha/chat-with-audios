@@ -1,0 +1,9 @@
+streamlit
+python-dotenv
+uuid
+qdrant-client
+assemblyai
+transformers
+torch
+sentence-transformers
+sambanova-python-client
