@@ -39,21 +39,14 @@ with st.sidebar:
                 st.write("Transcribing with AssemblyAI and storing in vector database...")
 
                 if file_key not in st.session_state.get('file_cache', {}):
-                    # Initialize transcriber
-                    transcriber = Transcribe(api_key=os.getenv("ASSEMBLYAI_API_KEY"))
-                    
-                    # Get speaker-labeled transcripts
+                    transcriber = Transcribe(api_key=os.getenv("ASSEMBLYAI"))
                     transcripts = transcriber.transcribe_audio(file_path)
                     st.session_state.transcripts = transcripts
                     
-                    # Each speaker segment becomes a separate document for embedding
                     documents = [f"Speaker {t['speaker']}: {t['text']}" for t in transcripts]
-
-                    # embed data    
                     embeddata = EmbedData(embed_model_name="BAAI/bge-large-en-v1.5", batch_size=batch_size)
                     embeddata.embed(documents)
 
-                    # set up vector database
                     qdrant_vdb = QdrantVDB_QB(collection_name=collection_name,
                                           batch_size=batch_size,
                                           vector_dim=1024)
@@ -61,22 +54,15 @@ with st.sidebar:
                     qdrant_vdb.create_collection()
                     qdrant_vdb.ingest_data(embeddata=embeddata)
 
-                    # set up retriever
                     retriever = Retriever(vector_db=qdrant_vdb, embeddata=embeddata)
 
-                    # set up rag
                     query_engine = RAG(retriever=retriever, llm_name="DeepSeek-R1-Distill-Llama-70B")
                     st.session_state.file_cache[file_key] = query_engine
                 else:
                     query_engine = st.session_state.file_cache[file_key]
 
-                # Inform the user that the file is processed
                 st.success("Ready to Chat!")
-                
-                # Display audio player
                 st.audio(uploaded_file)
-                
-                # Display speaker-labeled transcript
                 st.subheader("Transcript")
                 with st.expander("Show full transcript", expanded=True):
                     for t in st.session_state.transcripts:
@@ -91,9 +77,6 @@ col1, col2 = st.columns([6, 1])
 with col1:
     st.markdown("""
     # RAG over Audio""") 
-#     # powered by <img src="data:image/png;base64,{}" width="200" style="vertical-align: -15px; padding-right: 10px;">  and <img src="data:image/png;base64,{}" width="200" style="vertical-align: -5px; padding-left: 10px;">
-# """.format(base64.b64encode(open("assets/Assemblyai.png", "rb").read()).decode(),
-#            base64.b64encode(open("assets/deep-seek.png", "rb").read()).decode()), unsafe_allow_html=True)
 
 with col2:
     st.button("Clear ↺", on_click=reset_chat)

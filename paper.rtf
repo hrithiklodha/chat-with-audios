@@ -1,0 +1,169 @@
+Audio-Based Retrieval Augmented Generation Using AssemblyAI Transcription and Deep Language Models
+Abstract
+This paper presents a novel approach to Retrieval Augmented Generation (RAG) over audio content by leveraging state-of-the-art speech-to-text transcription services and large language models. The proposed system combines AssemblyAI's speaker-diarized transcription with vector embedding techniques and retrieval mechanisms to enable contextual question answering about audio content. Our implementation demonstrates the feasibility of conversational interfaces for audio data, providing a scalable framework for information extraction from spoken content.
+I. Introduction
+Audio content, including meetings, lectures, and interviews, contains valuable information that is often inaccessible without manual transcription. Recent advances in speech-to-text technologies and large language models create new opportunities for building systems that can automatically process, index, and retrieve information from audio sources. This paper describes the design, implementation, and evaluation of an audio-based RAG system that enables users to ask questions about audio content through a natural language interface.
+II. System Architecture
+A. Overview
+The system consists of four main components:
+1. Audio transcription with speaker diarization
+2. Embedding generation for transcript segments
+3. Vector database storage and retrieval
+4. Language model integration for question answering
+B. Transcription Component
+The transcription component uses the AssemblyAI API to convert audio to text while identifying different speakers. This produces structured output that preserves conversational context:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class Transcribe:
+    def __init__(self, api_key: str):
+        """Initialize the Transcribe class with AssemblyAI API key."""
+        
+    def transcribe_audio(self, audio_path: str) -> List[Dict[str, str]]:
+        """Transcribe audio with speaker diarization."""
+
+
+
+
+
+
+
+
+
+
+
+C. Embedding and Storage
+Transcript segments are embedded using BAAI/bge-large-en-v1.5, a high-dimensional embedding model that captures semantic meaning. These embeddings are stored in a Qdrant vector database for efficient similarity search:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# embed data    
+embeddata = EmbedData(embed_model_name="BAAI/bge-large-en-v1.5", batch_size=batch_size)
+embeddata.embed(documents)
+
+# set up vector database
+qdrant_vdb = QdrantVDB_QB(collection_name=collection_name,
+                      batch_size=batch_size,
+                      vector_dim=1024)
+
+
+
+
+
+
+
+
+
+
+
+D. Query Processing
+User queries are processed through a retrieval engine that:
+1. Embeds the query using the same model
+2. Retrieves relevant transcript segments
+3. Provides context to a language model (DeepSeek-R1-Distill-Llama-70B)
+4. Generates a contextually relevant response
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# set up retriever
+retriever = Retriever(vector_db=qdrant_vdb, embeddata=embeddata)
+
+# set up rag
+query_engine = RAG(retriever=retriever, llm_name="DeepSeek-R1-Distill-Llama-70B")
+
+
+
+
+
+
+
+
+
+
+
+III. Implementation Details
+A. User Interface
+The system uses Streamlit to provide an intuitive web interface where users can:
+* Upload audio files
+* View speaker-diarized transcripts
+* Ask questions about audio content
+* Review conversation history
+B. Data Flow
+1. User uploads audio file
+2. System transcribes audio with speaker labels
+3. Transcripts are segmented and embedded
+4. Embeddings are stored in vector database
+5. User submits questions through chat interface
+6. System retrieves relevant contexts
+7. Language model generates responses using retrieved context
+C. Technical Components
+* AssemblyAI API: Provides advanced speech-to-text with speaker diarization
+* BAAI/bge-large-en-v1.5: Dense embedding model for semantic representation
+* Qdrant: Vector database for similarity search
+* DeepSeek-R1-Distill-Llama-70B: Large language model for response generation
+* Streamlit: Web framework for interactive interface
+IV. Evaluation and Results
+[Note: This section would typically contain quantitative evaluations, which are not available in the provided code]
+V. Discussion and Future Work
+The system demonstrates practical application of RAG techniques to audio content. Future improvements could include:
+* Real-time audio processing
+* Multi-language support
+* Improved speaker identification
+* Fine-tuning for domain-specific audio
+* Integration with additional modalities (video, documents)
+VI. Conclusion
+This paper presented an audio-based RAG system that enables natural language querying of audio content. By combining state-of-the-art transcription, embedding techniques, and language models, the system offers a practical solution for extracting information from audio sources. The implementation demonstrates the potential of conversational interfaces for audio data and establishes a foundation for future work in this domain.
+References
+[1] AssemblyAI, "Speaker diarization API," [Online]. Available: https://www.assemblyai.com/
+[2] BAAI, "BGE-large-en-v1.5: Text embedding model," [Online]. Available: https://huggingface.co/BAAI/bge-large-en-v1.5
+[3] Qdrant, "Vector similarity search engine," [Online]. Available: https://qdrant.tech/
+[4] DeepSeek, "DeepSeek-R1-Distill-Llama-70B language model," [Online]. Available: https://deepseek.ai/
+[5] Streamlit, "Fast way to build data apps," [Online]. Available: https://streamlit.io/
+[6] P. Lewis et al., "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks," in Proc. NeurIPS, 2020.
