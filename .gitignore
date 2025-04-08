@@ -4,3 +4,4 @@ assets
 qdrant_storage
 *.pyc
 .DS_Store
+devcontainer.json
