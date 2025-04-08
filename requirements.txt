@@ -1,5 +1,11 @@
+streamlit
 assemblyai==0.37.0
 llama_index==0.12.28
 python-dotenv==1.1.0
 qdrant_client==1.13.3
 streamlit==1.41.1
+llama-index-embeddings-huggingface
+llama-index-llms-sambanovasystems
+llama-index-vector-stores-qdrant
+sseclient-py
+llama-index-llms-ollama
