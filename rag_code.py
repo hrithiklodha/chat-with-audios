@@ -6,7 +6,7 @@ from llama_index.llms.sambanovasystems import SambaNovaCloud
 from llama_index.llms.ollama import Ollama
 import assemblyai as aai
 from typing import List, Dict
-
+import os
 
 from llama_index.core.base.llms.types import (
     ChatMessage,
@@ -43,7 +43,14 @@ class QdrantVDB_QB:
         self.vector_dim = vector_dim
 
     def define_client(self):
-        self.client = QdrantClient(url="http://localhost:6333", prefer_grpc=True)
+        from qdrant_client import QdrantClient
+
+        self.client = QdrantClient(
+        url=os.getenv("URL"), 
+        api_key=os.getenv("API_KEY"),
+        prefer_grpc=True)
+        print(self.get_collections())
+
     def create_collection(self):
         if not self.client.collection_exists(collection_name=self.collection_name):
             self.client.create_collection(
