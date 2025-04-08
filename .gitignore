@@ -1,0 +1,6 @@
+.env
+hf_cache
+assets
+qdrant_storage
+*.pyc
+.DS_Store
