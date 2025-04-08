@@ -21,27 +21,12 @@ The transcription component uses the AssemblyAI API to convert audio to text whi
 
 
 
-
-
-
-
-
-
-
-
-
 class Transcribe:
     def __init__(self, api_key: str):
         """Initialize the Transcribe class with AssemblyAI API key."""
         
     def transcribe_audio(self, audio_path: str) -> List[Dict[str, str]]:
         """Transcribe audio with speaker diarization."""
-
-
-
-
-
-
 
 
 
@@ -60,31 +45,13 @@ Transcript segments are embedded using BAAI/bge-large-en-v1.5, a high-dimensiona
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 # embed data    
 embeddata = EmbedData(embed_model_name="BAAI/bge-large-en-v1.5", batch_size=batch_size)
 embeddata.embed(documents)
-
 # set up vector database
 qdrant_vdb = QdrantVDB_QB(collection_name=collection_name,
                       batch_size=batch_size,
                       vector_dim=1024)
-
-
-
-
-
-
 
 
 
@@ -104,25 +71,10 @@ User queries are processed through a retrieval engine that:
 
 
 
-
-
-
-
-
-
-
-
 # set up retriever
 retriever = Retriever(vector_db=qdrant_vdb, embeddata=embeddata)
-
 # set up rag
 query_engine = RAG(retriever=retriever, llm_name="DeepSeek-R1-Distill-Llama-70B")
-
-
-
-
-
-
 
 
 
